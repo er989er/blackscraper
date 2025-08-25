@@ -1,10 +1,9 @@
-# Save as app.py
 import requests
 from bs4 import BeautifulSoup
 import streamlit as st
 
-# --- PAGE CONFIG & STYLING ---
-st.set_page_config(page_title="Universal Web Scraper", layout="wide")
+# --- PAGE CONFIG & DARK MODE STYLING ---
+st.set_page_config(page_title="Black Scraper", layout="wide")
 st.markdown(
     """
     <style>
@@ -23,7 +22,7 @@ st.markdown(
     </style>
     """, unsafe_allow_html=True
 )
-st.title("🌐 Universal Web Scraper (Dark Mode)")
+st.title("Black Scraper (Dark Mode)")
 
 # --- USER INPUT ---
 url = st.text_input("Enter Website URL:")
@@ -56,7 +55,7 @@ if st.button("Scrape Website"):
                     # --- SAVE TO FILE ---
                     content = "\n\n".join(results)
                     st.download_button(
-                        label="💾 Download Results as TXT",
+                        label="Download Results as TXT",
                         data=content,
                         file_name="scraped_content.txt",
                         mime="text/plain"
