@@ -22,7 +22,7 @@ st.markdown(
     </style>
     """, unsafe_allow_html=True
 )
-st.title("Black Scraper")
+st.title("Black Scraper (Dark Mode)")
 
 # --- USER INPUT ---
 url = st.text_input("Enter Website URL:")
@@ -35,8 +35,21 @@ if st.button("Scrape Website"):
         st.warning("Please enter a URL.")
     else:
         try:
-            response = requests.get(url)
-            if response.status_code != 200:
+            headers = {
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/120.0.0.0 Safari/537.36"
+                )
+            }
+            response = requests.get(url, headers=headers, timeout=10)
+
+            # --- HANDLE BLOCKED OR FAILED REQUESTS ---
+            if response.status_code == 403:
+                st.error("Access denied (403). This site may block automated requests.")
+            elif response.status_code == 429:
+                st.error("Too many requests (429). Try again later.")
+            elif response.status_code != 200:
                 st.error(f"Failed to fetch page: {response.status_code}")
             else:
                 soup = BeautifulSoup(response.text, "html.parser")
@@ -52,7 +65,6 @@ if st.button("Scrape Website"):
                     for item in results[:50]:
                         st.write(item)
 
-                    # --- SAVE TO FILE ---
                     content = "\n\n".join(results)
                     st.download_button(
                         label="Download Results as TXT",
@@ -62,5 +74,8 @@ if st.button("Scrape Website"):
                     )
                 else:
                     st.info("No content found for the specified tags.")
-        except Exception as e:
-            st.error(f"Error: {e}")
+
+        except requests.exceptions.Timeout:
+            st.error("Request timed out. The site may be slow or unresponsive.")
+        except requests.exceptions.RequestException as e:
+            st.error(f"An error occurred: {e}")
