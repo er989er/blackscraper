@@ -22,7 +22,7 @@ st.markdown(
     </style>
     """, unsafe_allow_html=True
 )
-st.title("Black Scraper (Dark Mode)")
+st.title("Black Scraper")
 
 # --- USER INPUT ---
 url = st.text_input("Enter Website URL:")
