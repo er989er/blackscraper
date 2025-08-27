@@ -29,9 +29,6 @@ url = st.text_input("Enter Website URL:")
 tags_input = st.text_input("HTML tags to scrape (comma-separated, default=h1,h2,h3,p):", "h1,h2,h3,p")
 tags = [t.strip() for t in tags_input.split(",")]
 
-# --- SLIDER FOR NUMBER OF RESULTS ---
-max_results = st.slider("Number of results to display", min_value=1, max_value=100, value=50)
-
 # --- SCRAPE & DISPLAY ---
 if st.button("Scrape Website"):
     if not url:
@@ -59,20 +56,14 @@ if st.button("Scrape Website"):
                 results = []
                 for tag in tags:
                     for element in soup.find_all(tag):
-                        if tag == "a" and element.has_attr("href"):
-                            results.append(f'<a href="{element["href"]}" target="_blank">{element.get_text(strip=True)}</a>')
-                        else:
-                            text = element.get_text(strip=True)
-                            if text:
-                                results.append(f"<{tag}>: {text}")
+                        text = element.get_text(strip=True)
+                        if text:
+                            results.append(f"<{tag}>: {text}")
 
                 if results:
-                    st.subheader(f"First {max_results} Results")
-                    for item in results[:max_results]:
-                        if item.startswith("<a"):
-                            st.markdown(item, unsafe_allow_html=True)
-                        else:
-                            st.write(item)
+                    st.subheader("First 50 Results")
+                    for item in results[:50]:
+                        st.write(item)
 
                     content = "\n\n".join(results)
                     st.download_button(
