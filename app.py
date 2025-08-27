@@ -93,5 +93,4 @@ expert_tags = {
 "dfn (definition term)": "dfn",
 "dialog (dialog box)": "dialog",
 "div (generic container)": "div",
-st.error(f"An error occurred: {e}"):
-}
+st.error(f"An error occurred: {e}")}
