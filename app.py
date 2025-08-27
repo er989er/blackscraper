@@ -28,7 +28,7 @@ st.title("Black Scraper")
 
 # --- HOW TO USE TUTORIAL ---
 with st.expander("📘 Tutorial: How to Use HTML Tags"):
-st.markdown("""
+  st.markdown("""
 **HTML tags tell the scraper what type of content you want to extract.**
 👉 Choose tags from the beginner or expert dropdowns below, or enter custom tags manually.
 
