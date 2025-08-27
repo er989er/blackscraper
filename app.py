@@ -2,80 +2,95 @@ import requests
 from bs4 import BeautifulSoup
 import streamlit as st
 
+
 # --- PAGE CONFIG & DARK MODE STYLING ---
 st.set_page_config(page_title="Black Scraper", layout="wide")
 st.markdown(
-    """
-    <style>
-    body {
-        background-color: #000000;
-        color: #00ffff;
-    }
-    .stButton>button {
-        background-color: #0000ff;
-        color: white;
-    }
-    .stTextInput>div>div>input {
-        background-color: #000000;
-        color: #00ffff;
-    }
-    </style>
-    """, unsafe_allow_html=True
+"""
+<style>
+body {
+background-color: #000000;
+color: #00ffff;
+}
+.stButton>button {
+background-color: #0000ff;
+color: white;
+}
+.stTextInput>div>div>input {
+background-color: #000000;
+color: #00ffff;
+}
+</style>
+""", unsafe_allow_html=True
 )
-st.title("Black Scraper (Dark Mode)")
+st.title("Black Scraper")
 
-# --- USER INPUT ---
-url = st.text_input("Enter Website URL:")
-tags_input = st.text_input("HTML tags to scrape (comma-separated, default=h1,h2,h3,p):", "h1,h2,h3,p")
-tags = [t.strip() for t in tags_input.split(",")]
 
-# --- SCRAPE & DISPLAY ---
-if st.button("Scrape Website"):
-    if not url:
-        st.warning("Please enter a URL.")
-    else:
-        try:
-            headers = {
-                "User-Agent": (
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/120.0.0.0 Safari/537.36"
-                )
-            }
-            response = requests.get(url, headers=headers, timeout=10)
+# --- HOW TO USE TUTORIAL ---
+with st.expander("📘 Tutorial: How to Use HTML Tags"):
+st.markdown("""
+**HTML tags tell the scraper what type of content you want to extract.**
+👉 Choose tags from the beginner or expert dropdowns below, or enter custom tags manually.
 
-            # --- HANDLE BLOCKED OR FAILED REQUESTS ---
-            if response.status_code == 403:
-                st.error("Access denied (403). This site may block automated requests.")
-            elif response.status_code == 429:
-                st.error("Too many requests (429). Try again later.")
-            elif response.status_code != 200:
-                st.error(f"Failed to fetch page: {response.status_code}")
-            else:
-                soup = BeautifulSoup(response.text, "html.parser")
-                results = []
-                for tag in tags:
-                    for element in soup.find_all(tag):
-                        text = element.get_text(strip=True)
-                        if text:
-                            results.append(f"<{tag}>: {text}")
 
-                if results:
-                    st.subheader("First 50 Results")
-                    for item in results[:50]:
-                        st.write(item)
+- **Beginner Dropdown** → Common tags most people use (paragraphs, titles, links, images).
+- **Expert Dropdown** → Nearly all HTML tags with explanations.
+""")
 
-                    content = "\n\n".join(results)
-                    st.download_button(
-                        label="Download Results as TXT",
-                        data=content,
-                        file_name="scraped_content.txt",
-                        mime="text/plain"
-                    )
-                else:
-                    st.info("No content found for the specified tags.")
 
-        except requests.exceptions.Timeout:
-            st.error("Request timed out. The site may be slow or unresponsive.")
-        except requests.exceptions.RequestException as e:
-            st.error(f"An error occurred: {e}")
+# --- BEGINNER TAGS (common for scraping) ---
+beginner_tags = {
+"p (paragraphs of text)": "p",
+"h1 (main heading)": "h1",
+"h2 (section heading)": "h2",
+"h3 (subsection heading)": "h3",
+"a (links)": "a",
+"img (images → URLs)": "img",
+"li (list item)": "li",
+"ul (unordered list)": "ul",
+"ol (ordered list)": "ol",
+"table (table element)": "table",
+"tr (table row)": "tr",
+"td (table cell)": "td"
+}
+
+
+selected_beginner = st.multiselect(
+"🔰 Beginner Tags (common & useful):",
+options=list(beginner_tags.keys()),
+default=["p (paragraphs of text)", "h1 (main heading)", "a (links)"]
+)
+
+
+# --- EXPERT TAGS (FULL HTML5 LIST) ---
+expert_tags = {
+"a (hyperlink)": "a",
+"abbr (abbreviation)": "abbr",
+"address (contact information)": "address",
+"area (image map area)": "area",
+"article (self-contained content)": "article",
+"aside (sidebar content)": "aside",
+"audio (sound content)": "audio",
+"b (bold text - stylistic)": "b",
+"base (base URL for relative links)": "base",
+"bdi (bi-directional text isolate)": "bdi",
+"bdo (bi-directional text override)": "bdo",
+"blockquote (quoted block of text)": "blockquote",
+"body (document body)": "body",
+"br (line break)": "br",
+"button (clickable button)": "button",
+"canvas (graphics container)": "canvas",
+"caption (table caption)": "caption",
+"cite (citation reference)": "cite",
+"code (inline code snippet)": "code",
+"col (table column)": "col",
+"colgroup (group of table columns)": "colgroup",
+"data (machine-readable value)": "data",
+"datalist (list of options for input)": "datalist",
+"dd (description definition)": "dd",
+"del (deleted text)": "del",
+"details (expandable details widget)": "details",
+"dfn (definition term)": "dfn",
+"dialog (dialog box)": "dialog",
+"div (generic container)": "div",
+st.error(f"An error occurred: {e}")
